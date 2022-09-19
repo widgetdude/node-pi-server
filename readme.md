@@ -6,21 +6,18 @@ This readme is a work in progress. It will be updated as the project progresses.
 
 I couldnt find a consolidated place that gave me all the information I needed to to get a Raspberry PI up and running with an Express server. So I decided to make one.
 
-This project will be a step by step guide to getting a Raspberry PI up and running with an Express server. The eventual goal is to have a Raspberry PI that can be accessed from anywhere in the world and can be used to control gpio pins.
+This project will be a step by step guide to getting a Raspberry PI up and running with an Express server including socketio. The eventual goal is to have a Raspberry PI that can be accessed from anywhere in the world and can be used to control gpio pins.
 
 For this project I will be using the following:
 
-- Raspberry PI 4 Model B
-- Express
-- Socket.io
+- [Raspberry PI 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/)
+- [Express](https://expressjs.com/)
+- [Socket.io](https://socket.io/)
   - The idea is to use socket.io to send and receive data from the Raspberry PI to another server. This will allow the client to control the gpio pins on the Raspberry PI. Without having to deal with router port forwarding and other issues that come with trying to access a Raspberry PI from the internet.
-  - [Socket.io Documentation](https://socket.io/)
-- PM2
+- [PM2](https://pm2.keymetrics.io/)
   - This is a process manager for Node.js applications. It will allow me to keep the Express server running even if I close the terminal.
-  - [PM2 Documentation](https://pm2.keymetrics.io/docs/usage/quick-start/)
-- Nginx
+- [Nginx](https://www.nginx.com/)
   - Nginx will be used as a reverse proxy to allow for http/https connections.
-  - [Nginx Documentation](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
 
 # Pi Setup
 
