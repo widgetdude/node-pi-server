@@ -1,8 +1,16 @@
 ## Information
 
-## Install the OS
+This readme is a work in progress. It will be updated as the project progresses.
 
-Refer to the Raspi website to install the os on a SD Card. https://www.raspberrypi.com/documentation/computers/getting-started.html
+# Pi Setup
+
+Download and install PiImager from https://www.raspberrypi.org/software/
+
+# Pi Configuration
+
+## Install Raspbian
+
+Download the Refer to the Raspi website to install the os on a SD Card. https://www.raspberrypi.com/documentation/computers/getting-started.html
 
 Here is a great step by step https://www.tomshardware.com/how-to/set-up-raspberry-pi
 
