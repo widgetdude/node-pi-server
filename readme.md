@@ -2,13 +2,42 @@
 
 This readme is a work in progress. It will be updated as the project progresses.
 
+# Project Description
+
+I couldnt find a consolidated place that gave me all the information I needed to to get a Raspberry PI up and running with an Express server. So I decided to make one.
+
+This project will be a step by step guide to getting a Raspberry PI up and running with an Express server. The eventual goal is to have a Raspberry PI that can be accessed from anywhere in the world and can be used to control gpio pins.
+
+For this project I will be using the following:
+
+- Raspberry PI 4 Model B
+- Express
+- Socket.io
+  - The idea is to use socket.io to send and receive data from the Raspberry PI to another server. This will allow the client to control the gpio pins on the Raspberry PI. Without having to deal with router port forwarding and other issues that come with trying to access a Raspberry PI from the internet.
+  - [Socket.io Documentation](https://socket.io/)
+- PM2
+  - This is a process manager for Node.js applications. It will allow me to keep the Express server running even if I close the terminal.
+  - [PM2 Documentation](https://pm2.keymetrics.io/docs/usage/quick-start/)
+- Nginx
+  - Nginx will be used as a reverse proxy to allow for http/https connections.
+  - [Nginx Documentation](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
+
 # Pi Setup
 
-Download and install PiImager from https://www.raspberrypi.org/software/
-
-# Pi Configuration
+Download and install Pi Imager from https://www.raspberrypi.org/software/
 
 ## Install Raspbian
+
+- Insert an SD card into your computer.
+- Open Pi Imager and select Raspbian as the operating system.
+- Select the SD card as the target.
+- Click the settings icon.
+  - Select the "Advanced Options" tab.
+- Click "Write".
+
+Select the SD card as the storage device. Click "Write". Wait for the image to be written to the SD card.
+
+Using Pi Imager, install Raspbian to the SD card.
 
 Download the Refer to the Raspi website to install the os on a SD Card. https://www.raspberrypi.com/documentation/computers/getting-started.html
 
@@ -36,6 +65,8 @@ name the pi and set the password
 
 Using the `Hostname` you set earlier, you can get the IP address of the pi. This will be used to login via SSH.
 
+`Local Computer`
+
 ```bash
 ping -c 1 {{HOSTNAME}}.local | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head -1
 ```
@@ -50,6 +81,8 @@ ping -c 1 raspberrypi.local | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head 
 
 Using the `Hostname` and `Username` and `Password` you set earlier, you can login via SSH.
 
+`Local Computer`
+
 ```bash
 ssh {{USERNAME}}@{{IP_ADDRESS}}
 ```
@@ -58,11 +91,15 @@ It will prompt you for the password. Enter the password you set earlier.
 
 If you have previously connected to the pi, you may need to remove the old key from the known hosts file.
 
+`Local Computer`
+
 ```bash
 ssh-keygen -R {{IP_ADDRESS}}
 ```
 
 ## Update the OS
+
+`Pi via SSH`
 
 ```bash
 sudo apt-get update
@@ -71,12 +108,16 @@ sudo apt-get upgrade
 
 ## Install NodeJS and NPM
 
+`Pi via SSH`
+
 ```bash
 sudo apt-get install nodejs
 sudo apt-get install npm
 ```
 
 ## Update NodeJS and NPM
+
+`Pi via SSH`
 
 ```bash
 sudo npm cache clean -f
@@ -86,6 +127,8 @@ sudo n stable
 
 ## Check NodeJS and NPM versions
 
+`Pi via SSH`
+
 ```bash
 node -v
 npm -v
@@ -93,19 +136,21 @@ npm -v
 
 ## Install Git
 
+`Pi via SSH`
+
 ```bash
 sudo apt-get install git
 ```
 
 ## Clone the repo
 
-Navigate to the directory you want to clone the repo to and run the following command.
+Navigate to the directory you want to clone the repo to and run the following command. `Pi via SSH`
 
 ```bash
 git clone https://github.com/widgetdude/node-pi-server.git
 ```
 
-Change into the directory
+Change into the directory `Pi via SSH`
 
 ```bash
 cd node-pi-server
@@ -113,11 +158,15 @@ cd node-pi-server
 
 ## Install the dependencies
 
+`Pi via SSH`
+
 ```bash
 npm install
 ```
 
 ## Run the server
+
+`Pi via SSH`
 
 ```bash
 npm start
