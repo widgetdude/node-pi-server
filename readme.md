@@ -148,6 +148,8 @@ There are quite a few ways to do this. I prefer editing the file directly using 
 
 #### Change the permissions of the file to allow editing
 
+On the pi, run the following command.
+
 ```bash
 sudo chmod 777 /etc/nginx/sites-available/default
 ```
@@ -187,6 +189,8 @@ server {
 Be sure to save the file.
 
 #### Change the permissions of the file back to normal
+
+On the pi, run the following command.
 
 ```bash
 sudo chmod 644 /etc/nginx/sites-available/default
