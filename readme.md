@@ -113,3 +113,55 @@ sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -
 ```bash
 sudo systemctl enable nginx
 ```
+
+## Edit Nginx config
+
+There are quite a few ways to do this. I prefer editing the file directly using vscode. You can also use nano or vim.
+
+### vscode
+
+#### Change the permissions of the file to allow editing
+
+```bash
+sudo chmod 777 /etc/nginx/sites-available/default
+```
+
+#### Open the file
+
+Install the extension `Remote - SSH` and then connect to the pi. This will open a new vscode window with the pi as the root folder. Navigate to the /etc/nginx dir and open it in the editor. Once the directory is open, open the `sites-available` directory and then open the `default` file.
+
+#### Edit the file
+
+This essentially just adds a new server block to the file. You can copy and paste the following into the file. It will redirect all traffic to the pi to the port 3000. This is where our app will be running.
+
+Replace the contents of the file with the following:
+
+```bash
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+Be sure to save the file.
+
+#### Change the permissions of the file back to normal
+
+```bash
+sudo chmod 644 /etc/nginx/sites-available/default
+```
