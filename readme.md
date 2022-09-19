@@ -89,6 +89,26 @@ npm -v
 sudo apt-get install git
 ```
 
+## Clone the repo
+
+Navigate to the directory you want to clone the repo to and run the following command.
+
+```bash
+git clone https://github.com/widgetdude/node-pi-server.git
+```
+
+Change into the directory
+
+```bash
+cd node-pi-server
+```
+
+## Install the dependencies
+
+```bash
+npm install
+```
+
 ## Install PM2 and Nginx
 
 ```bash
