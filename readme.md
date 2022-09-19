@@ -109,6 +109,12 @@ cd node-pi-server
 npm install
 ```
 
+## Run the server
+
+```bash
+npm start
+```
+
 ## Install PM2 and Nginx
 
 ```bash
