@@ -28,7 +28,7 @@ Download and install Pi Imager from https://www.raspberrypi.org/software/
 
 ## Install Raspbian
 
-- Insert a mixro SD card into your computer.
+- Insert a micro SD card into your computer.
 - Open Pi Imager and select `Raspbian Pi OS(32-bit)` as the operating system, it should be the default.
 - Click on choose Storage and select the SD card as the target.
 - Click the settings icon.
