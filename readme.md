@@ -174,8 +174,7 @@ Download and install Pi Imager from https://www.raspberrypi.org/software/
   - ```bash
     sudo reboot
     ```
-- Notice that during reboot process, the server isnt reachable.
-- Open a web browser and navigate to the IP address of the Raspberry PI.
+- Notice that during reboot process, the server isnt reachable. Open a web browser and navigate to the IP address of the Raspberry PI.
   - ```bash
     http://{{IP_ADDRESS}}:3000/api/helloworld
     ```
