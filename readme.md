@@ -11,8 +11,8 @@ This project will be a step by step guide to getting a Raspberry PI up and runni
 For this project I will be using the following:
 
 - [Raspberry PI 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/)
-- [Express](https://expressjs.com/)
-- [Socket.io](https://socket.io/)
+- [Express](https://expressjs.com/) || [NPM](https://www.npmjs.com/package/express)
+- [Socket.io](https://socket.io/) || [NPM](https://www.npmjs.com/package/socket.io-client)
   - The idea is to use socket.io to send and receive data from the Raspberry PI to another server. This will allow the client to control the gpio pins on the Raspberry PI. Without having to deal with router port forwarding and other issues that come with trying to access a Raspberry PI from the internet.
 - [PM2](https://pm2.keymetrics.io/)
   - This is a process manager for Node.js applications. It will allow me to keep the Express server running even if I close the terminal.
@@ -186,3 +186,93 @@ Download and install Pi Imager from https://www.raspberrypi.org/software/
   - ```bash
     http://{{IP_ADDRESS}}:3000/api/helloworld
     ```
+
+## Install NGINX as a reverse proxy
+
+#### NGINX will allow us to not add the port to the URL. It will redirect all traffic from port 80 (standard http) to port 3000.
+
+- Run the following command to install NGINX.
+  - ```bash
+    sudo apt install nginx
+    ```
+- Run the following command to start NGINX.
+  - ```bash
+    sudo systemctl start nginx
+    ```
+- Run the following command to enable NGINX to start on boot.
+  - ```bash
+    sudo systemctl enable nginx
+    ```
+- Run the following command to check the status of NGINX.
+  - ```bash
+    sudo systemctl status nginx
+    ```
+
+### Configure NGINX
+
+- There are several ways to configure NGINX. I prefer to use vscode with the Remote SSH extension. This will allow you to edit the NGINX config file on your local machine.
+- Open vscode and install the `Remote SSH` extension.
+- Open the command palette (default F1) and run the following command.
+  - ```bash
+    Remote-SSH: Connect to Host...
+    ```
+- Select add new SSH host.
+- Enter the user name and IP address of the Raspberry PI.
+  - ```bash
+    ssh {{USERNAME}}@{{IP_ADDRESS}}
+    ```
+- Click connect.
+- Enter the password for the Raspberry PI.
+- You should now be connected to the Raspberry PI via SSH.
+- In VsCode explorer, navigate to the following directory.
+  - ```bash
+    /etc/nginx/sites-available
+    ```
+- Open the default file. `/etc/nginx/sites-available/default`
+- The file by default is locked. Run the following command to unlock the file.
+  - ```bash
+    sudo chmod 777 /etc/nginx/sites-available/default
+    ```
+- Replace the contents of the file with the following.
+
+  - ```bash
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name _;
+
+        location / {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://localhost:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+      }
+    ```
+
+- Save the file.
+- Lock the file.
+  - ```bash
+    sudo chmod 644 /etc/nginx/sites-available/default
+    ```
+- Restart NGINX.
+  - ```bash
+    sudo systemctl restart nginx
+    ```
+- Open a web browser and navigate to the IP address of the Raspberry PI.
+  - ```bash
+    http://{{IP_ADDRESS}}/api/helloworld
+    ```
+- You should see the following message.
+  - ```json
+    { "message": "Hello World" }
+    ```
+- You can now access the server without the port.
