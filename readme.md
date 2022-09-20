@@ -18,6 +18,9 @@ For this project I will be using the following:
   - This is a process manager for Node.js applications. It will allow me to keep the Express server running even if I close the terminal.
 - [Nginx](https://www.nginx.com/)
   - Nginx will be used as a reverse proxy to allow for http/https connections.
+  - Since I plan on using sockets as the main way to communicate with the Raspberry PI, Nginx is mainly for testing purposes.
+- [AWS](https://aws.amazon.com/)
+  - I will be using AWS to host an Express and Socketio server. This will allow me to access the Raspberry PI from anywhere in the world.
 
 # Pi Setup
 
@@ -25,227 +28,161 @@ Download and install Pi Imager from https://www.raspberrypi.org/software/
 
 ## Install Raspbian
 
-- Insert an SD card into your computer.
-- Open Pi Imager and select Raspbian as the operating system.
-- Select the SD card as the target.
+- Insert a mixro SD card into your computer.
+- Open Pi Imager and select `Raspbian Pi OS(32-bit)` as the operating system, it should be the default.
+- Click on choose Storage and select the SD card as the target.
 - Click the settings icon.
-  - Select the "Advanced Options" tab.
-- Click "Write".
-
-Select the SD card as the storage device. Click "Write". Wait for the image to be written to the SD card.
-
-Using Pi Imager, install Raspbian to the SD card.
-
-Download the Refer to the Raspi website to install the os on a SD Card. https://www.raspberrypi.com/documentation/computers/getting-started.html
-
-Here is a great step by step https://www.tomshardware.com/how-to/set-up-raspberry-pi
-
-<p align="center">
-  <img src="https://cdn.mos.cms.futurecdn.net/3rPEmh2KB54z334tZ6xcRS-1200-80.png" width="350" alt="accessibility text">
-</p>
-
-## Set Hostname
-
-Either leave as the default `raspberrypi` or change the name. But remember this for later, we will need it to get the ip of the server.
-
-## Enable SSH
-
-Ensure `Enable SSH` is checked and `Use password authentication` is selected.
-
-## Set Username and Password
-
-Ensure `Set username and password` is selected and remember these for later. These creds will be used to login via SSH.
-
-name the pi and set the password
-
-## Get the pi's IP address
-
-Using the `Hostname` you set earlier, you can get the IP address of the pi. This will be used to login via SSH.
-
-`Local Computer`
-
-```bash
-ping -c 1 {{HOSTNAME}}.local | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head -1
-```
-
-Example:
-
-```bash
-ping -c 1 raspberrypi.local | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head -1
-```
-
-## Login via SSH
-
-Using the `Hostname` and `Username` and `Password` you set earlier, you can login via SSH.
-
-`Local Computer`
-
-```bash
-ssh {{USERNAME}}@{{IP_ADDRESS}}
-```
-
-It will prompt you for the password. Enter the password you set earlier.
-
-If you have previously connected to the pi, you may need to remove the old key from the known hosts file.
-
-`Local Computer`
-
-```bash
-ssh-keygen -R {{IP_ADDRESS}}
-```
-
-## Update the OS
-
-`Pi via SSH`
-
-```bash
-sudo apt-get update
-sudo apt-get upgrade
-```
-
-## Install NodeJS and NPM
-
-`Pi via SSH`
-
-```bash
-sudo apt-get install nodejs
-sudo apt-get install npm
-```
-
-## Update NodeJS and NPM
-
-`Pi via SSH`
-
-```bash
-sudo npm cache clean -f
-sudo npm install -g n
-sudo n stable
-```
-
-## Check NodeJS and NPM versions
-
-`Pi via SSH`
-
-```bash
-node -v
-npm -v
-```
-
-## Install Git
-
-`Pi via SSH`
-
-```bash
-sudo apt-get install git
-```
-
-## Clone the repo
-
-Navigate to the directory you want to clone the repo to and run the following command. `Pi via SSH`
-
-```bash
-git clone https://github.com/widgetdude/node-pi-server.git
-```
-
-Change into the directory `Pi via SSH`
-
-```bash
-cd node-pi-server
-```
-
-## Install the dependencies
-
-`Pi via SSH`
-
-```bash
-npm install
-```
-
-## Run the server
-
-`Pi via SSH`
-
-```bash
-npm start
-```
-
-## Install PM2 and Nginx
-
-```bash
-sudo npm install pm2 -g
-sudo apt-get install nginx
-```
-
-## Make PM2 start on boot
-
-```bash
-pm2 startup systemd
-```
-
-It will output a command to run. Copy and paste that command into the terminal. e.g.
-
-```bash
-sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u pi --hp /home/pi
-```
-
-## Make Nginx start on boot
-
-```bash
-sudo systemctl enable nginx
-```
-
-## Edit Nginx config
-
-There are quite a few ways to do this. I prefer editing the file directly using vscode. You can also use nano or vim.
-
-### vscode
-
-#### Change the permissions of the file to allow editing
-
-On the pi, run the following command.
-
-```bash
-sudo chmod 777 /etc/nginx/sites-available/default
-```
-
-#### Open the file
-
-Install the extension `Remote - SSH` and then connect to the pi. This will open a new vscode window with the pi as the root folder. Navigate to the /etc/nginx dir and open it in the editor. Once the directory is open, open the `sites-available` directory and then open the `default` file.
-
-#### Edit the file
-
-This essentially just adds a new server block to the file. You can copy and paste the following into the file. It will redirect all traffic to the pi to the port 3000. This is where our app will be running.
-
-Replace the contents of the file with the following:
-
-```bash
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-    root /var/www/html;
-
-    index index.html index.htm index.nginx-debian.html;
-
-    server_name _;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
-Be sure to save the file.
-
-#### Change the permissions of the file back to normal
-
-On the pi, run the following command.
-
-```bash
-sudo chmod 644 /etc/nginx/sites-available/default
-```
+  - Set hostname to `raspberrypi`
+  - Make sure SSH is enabled
+    - This will allow you to connect to the Raspberry PI via SSH.
+    - Make sure "Use Password Authentication" is enabled.
+  - Set a username and password.
+    - This will be the username and password you use to login to the Raspberry PI.
+  - Configure the wifi. (Wireless LAN)
+    - This will allow you to connect to the Raspberry PI via wifi.
+    - SSID: The name of your wifi network.
+    - Password: The password for your wifi network.
+    - **IMPORTANT: Make sure you have the correct wifi country code selected.**
+      - This can be found in the dropdown menu.
+      - If you select the wrong country code you will not be able to connect to the Raspberry PI via wifi.
+- Click "Write" to write the image to the SD card.
+- Remove the SD card from your computer and insert it into the Raspberry PI.
+- Connect the Raspberry PI to power.
+- Wait for the Raspberry PI to boot up.
+
+## Connect to the Raspberry PI via SSH
+
+- Using the `Hostname` you set earlier, you can get the IP address of the pi. This will be used to login via SSH.
+- Open a terminal and run the following command.
+  - ```bash
+    ping -c 1 {{HOSTNAME}}.local | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head -1
+    ```
+  - This will return the IP address of the Raspberry PI.
+- Open a terminal and run the following command.
+  - This will connect you to the Raspberry PI via SSH.
+  - ```bash
+    ssh {{USERNAME}}@{{IP_ADDRESS}}
+    ```
+- Enter the password you set earlier.
+- You should now be connected to the Raspberry PI via SSH.
+- If you have previously connected to the pi, you may need to remove the old key from the known hosts file.
+  - ```bash
+    ssh-keygen -R {{IP_ADDRESS}}
+    ```
+  - This will remove the old key from the known hosts file.
+  - You can now connect to the Raspberry PI via SSH.
+
+## Update the Raspberry PI and install Node.js
+
+- Run the following commands to update the Raspberry PI.
+  - ```bash
+    sudo apt update
+    sudo apt upgrade
+    ```
+- Run the following commands to install Node.js and npm.
+  - ```bash
+    sudo apt-get install nodejs
+    sudo apt-get install npm
+    ```
+- Update node and npm.
+  - ```bash
+    sudo npm cache clean -f
+    sudo npm install -g n
+    sudo n stable
+    ```
+- Check the version of node and npm.
+  - ```bash
+    node -v
+    npm -v
+    ```
+  - The version of node should be 16.15 or higher.
+  - The version of npm should be 8.15 or higher.
+
+## Install Git and Clone the Project and Install Dependencies
+
+- Run the following command to install git.
+  - ```bash
+    sudo apt install git
+    ```
+- Navigate to the directory you want to clone the project into.
+  - ```bash
+    cd {{DIRECTORY}}
+    ```
+- Run the following command to clone the project.
+  - ```bash
+    git clone https://github.com/widgetdude/node-pi-server.git
+    ```
+- Navigate into the project directory.
+  - ```bash
+    cd node-pi-server
+    ```
+- Run the following command to install the project dependencies.
+  - ```bash
+    npm install
+    ```
+
+## Run the server to make sure everything is working
+
+- Run the following command to start the server.
+  - ```bash
+    npm start
+    ```
+- The console should output the following.
+
+  - ```bash
+    Server running on port 3000
+    ```
+
+- Open a browser and navigate to the IP address of the Raspberry PI.
+
+  - ```bash
+    http://{{IP_ADDRESS}}:3000/api/helloworld
+    ```
+
+- You should see the following message.
+  - ```json
+    { "message": "Hello World" }
+    ```
+- Press `Ctrl + C` to stop the server.
+
+## Install PM2 to keep the server running even if you close the terminal and after a reboot
+
+- Run the following command to install PM2.
+  - ```bash
+    sudo npm install pm2@latest -g
+    ```
+- Run the following command to start the server with PM2.
+  - ```bash
+    pm2 start npm --name "node-pi-server" -- start
+    ```
+- Run the following command to save the process list.
+  - ```bash
+    pm2 save
+    ```
+- Run the following command to start the process list on boot.
+
+  - ```bash
+    pm2 startup systemd
+    ```
+  - It will output a command that you need to run. Copy and paste the command into the terminal and press enter.
+  - Example:
+    - ```bash
+      sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u {{USERNAME}} --hp /home/{{USERNAME}}
+      ```
+
+- Restart the Raspberry PI to make sure everything is working.
+  - ```bash
+    sudo reboot
+    ```
+- Notice that during reboot process, the server isnt reachable.
+- Open a web browser and navigate to the IP address of the Raspberry PI.
+  - ```bash
+    http://{{IP_ADDRESS}}:3000/api/helloworld
+    ```
+- You should see that the server is unreachable becuase the server is still starting up.
+- Wait a about minute for the server to finish rebooting and try again.
+- Because PM2 is set up, once the reboot is complete, the server should be reachable again.
+- Open a web browser and navigate to the IP address of the Raspberry PI.
+  - ```bash
+    http://{{IP_ADDRESS}}:3000/api/helloworld
+    ```
