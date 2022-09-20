@@ -18,7 +18,7 @@ For this project I will be using the following:
   - This is a process manager for Node.js applications. It will allow me to keep the Express server running even if I close the terminal.
 - [Nginx](https://www.nginx.com/)
   - Nginx will be used as a reverse proxy to allow for http/https connections.
-  - Since I plan on using sockets as the main way to communicate with the Raspberry PI, Nginx is mainly for testing purposes.
+  - Since I plan on using sockets as the main way to communicate with the Raspberry PI, Nginx is mainly for testing purposes and demonstration purposes.
 - [AWS](https://aws.amazon.com/)
   - I will be using AWS to host an Express and Socketio server. This will allow me to access the Raspberry PI from anywhere in the world.
 
@@ -53,24 +53,20 @@ Download and install Pi Imager from https://www.raspberrypi.org/software/
 ## Connect to the Raspberry PI via SSH
 
 - Using the `Hostname` you set earlier, you can get the IP address of the pi. This will be used to login via SSH.
-- Open a terminal and run the following command.
+- Open a terminal and run the following command. This will return the IP address of the Raspberry PI. As long as you are connected to the same network as the Raspberry PI.
   - ```bash
     ping -c 1 {{HOSTNAME}}.local | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head -1
     ```
-  - This will return the IP address of the Raspberry PI.
-- Open a terminal and run the following command.
-  - This will connect you to the Raspberry PI via SSH.
+- Open a terminal and run the following command. This will connect you to the Raspberry PI via SSH.
   - ```bash
     ssh {{USERNAME}}@{{IP_ADDRESS}}
     ```
 - Enter the password you set earlier.
 - You should now be connected to the Raspberry PI via SSH.
-- If you have previously connected to the pi, you may need to remove the old key from the known hosts file.
+- If you have previously connected to the pi, you may need to remove the old key from the known hosts file. This will remove the old key from the known hosts file. After running this command you will need to reconnect to the Raspberry PI via SSH.
   - ```bash
     ssh-keygen -R {{IP_ADDRESS}}
     ```
-  - This will remove the old key from the known hosts file.
-  - You can now connect to the Raspberry PI via SSH.
 
 ## Update the Raspberry PI and install Node.js
 
@@ -97,6 +93,11 @@ Download and install Pi Imager from https://www.raspberrypi.org/software/
     ```
   - The version of node should be 16.15 or higher.
   - The version of npm should be 8.15 or higher.
+- If you arent seeing the correct version of node and npm, restart the Raspberry PI and try again. Run the following command to restart the Raspberry PI. Than reconnect to the Raspberry PI via SSH and try again.
+  - ```bash
+    sudo reboot
+    ```
+-
 
 ## Install Git and Clone the Project and Install Dependencies
 
