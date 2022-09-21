@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
-require("./services/socket.client");
+const morgan = require("morgan");
+
+app.use(morgan("dev"));
 
 app.use("/api", require("./routes/api.router"));
 
