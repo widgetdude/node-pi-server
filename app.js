@@ -4,6 +4,6 @@ const morgan = require("morgan");
 
 app.use(morgan("dev"));
 
-app.use("/api", require("./routes/api.router"));
+app.use("/", require("./routes/router"));
 
 module.exports = app;
