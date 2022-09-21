@@ -6,7 +6,7 @@ const helloworld = require("./api/helloworld.router");
 router.use("/helloworld", helloworld);
 
 router.route("/").get((req, res) => {
-  res.status(200).json({ message: "Hello World!" });
+  res.status(200).json({ message: "Hello From Pi Server Root" });
 });
 
 module.exports = router;
